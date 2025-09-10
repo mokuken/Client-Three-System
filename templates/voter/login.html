@@ -13,7 +13,7 @@
 
 		body {
 			font-family: Arial, sans-serif;
-            background-image: url('images/bg.png');
+			background-image: url("{{ url_for('static', filename='images/bg.png') }}");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -76,25 +76,19 @@
 	<div class="title">
 		<span>VICENTE ANDAYA SENIOR NATIONAL HIGH SCHOOL</span>
         <br>
-		<span>A WEB VOTING SYSTEM</span>
+        <span>A WEB VOTING SYSTEM</span>
 	</div>
 	<div class="login-container">
-		<h1 style="margin-bottom: 20px;">Voter Registration</h1>
+		<h1 style="margin-bottom: 20px;">Voter Login</h1>
 		<form style="width:100%">
 			<label for="school-id">School ID</label>
 			<input type="text" id="school-id" name="school-id" required>
-			<label for="fullname">Full Name</label>
-			<input type="text" id="fullname" name="fullname" required>
-			<label for="grade">Grade & Section</label>
-			<input type="text" id="grade" name="grade" required>
 			<label for="password">Password</label>
 			<input type="password" id="password" name="password" required>
-			<label for="confirm-password">Confirm Password</label>
-			<input type="password" id="confirm-password" name="confirm-password" required>
-			<button type="submit">Register</button>
+			<button type="submit">Login</button>
 			<div style="text-align:center; margin-top:18px; font-size:0.98em; color:#555;">
-				Already have an account?
-				<a href="login.html" style="color:#2980b9; text-decoration:underline;">Login</a>
+				You don't have an account?
+				<a href="{{ url_for('voter_register') }}" style="color:#2980b9; text-decoration:underline;">Sign up</a>
 			</div>
 		</form>
 	</div>
