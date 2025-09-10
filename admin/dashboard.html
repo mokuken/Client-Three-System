@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        height: 100vh;
+        background-image: url('images/admin-bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* keeps it frozen while scrolling */
+    }
+    .navbar {
+        background-color: #333;
+        color: white;
+        height: 10vh;
+        padding: 10px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user {
+        display: flex;
+        align-items: center;
+    }
+
+    .main {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        height: 90vh;
+        gap: 20px;
+    }
+
+    .left {
+        width: 20%;
+        height: 100%;
+        border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .left a {
+        padding: 15px 20px;
+        text-decoration: none;
+        background-color: white;
+        color: black;
+        border-bottom: 1px solid black;
+        border-radius: 15px;
+    }
+
+    .left a.active, .left a:hover {
+        background-color: grey;
+        color: white;
+        font-weight: bold;
+    }
+
+    .right {
+        width: 80%;
+        height: 100%;
+        border: 1px solid black;
+    }
+    .election-status {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        grid-column-gap: 20px;
+        grid-row-gap: 20px;
+        height: 100%;
+        padding-right: 10px;
+    }
+
+    .casted-votes, .voting-progress, .registered-voters, .ongoing-election {
+        background: #fff;
+        color: black;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .elections {
+        background: #fff;
+        color: black;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .casted-votes { grid-area: 1 / 1 / 2 / 2; }
+    .voting-progress { grid-area: 1 / 2 / 2 / 3; }
+    .registered-voters { grid-area: 1 / 3 / 2 / 4; }
+    .ongoing-election { grid-area: 1 / 4 / 2 / 5; }
+    .elections { grid-area: 2 / 1 / 4 / 5; }
+</style>
+<body>
+    <div class="navbar">
+        <div class="brand">
+            <img src="images/logo.png" style="width: 50px;" alt="Logo" class="logo">
+            <div class="brand-name">
+                <h3>Vicente Andaya Senior National High School</h3>
+                <h4>Online Voting System</h4>
+            </div>
+        </div>
+        <div class="user">
+            <img src="images/profile.png" style="width: 30px; border-radius: 50%;" alt="User" class="user-icon">
+            <span class="username" style="margin-left: 10px; color: white;">John Doe</span>
+            <div class="logout">
+                <button style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 15px;">
+                    <img src="images/logout.png" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="left">
+            <a href="#" class="active">Dashboard</a>
+            <a href="#">Voters</a>
+            <a href="#">Election</a>
+            <a href="#">Candidates</a>
+            <a href="#">Position</a>
+            <a href="#">View Results</a>
+            <a href="#">Printed Result</a>
+        </div>
+        <div class="right">
+            <div class="election-status">
+                <div class="casted-votes">
+                    <h2>Casted Votes</h2>
+                    <h1>1500</h1>
+                </div>
+                <div class="voting-progress">
+                    <h2>Voting Progress</h2>
+                    <h1>75%</h1>
+                </div>
+                <div class="registered-voters">
+                    <h2>Registered Voters</h2>
+                    <h1>2000</h1>
+                </div>
+                <div class="ongoing-election">
+                    <h2>Ongoing Election</h2>
+                    <h1>1</h1>
+                </div>
+                <div class="elections">
+                    <h2>Elections</h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f4f4f4;">
+                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Name</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Status</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #eee;">School Council Election</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #eee;">Ongoing</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #eee;">07/25/25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
