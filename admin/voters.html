@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        height: 100vh;
+        background-image: url('../images/admin-bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* keeps it frozen while scrolling */
+    }
+    .navbar {
+        background-color: #333;
+        color: white;
+        height: 10vh;
+        padding: 10px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user {
+        display: flex;
+        align-items: center;
+    }
+
+    .main {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        height: 90vh;
+        gap: 20px;
+    }
+
+    .left {
+        width: 20%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .left a {
+        padding: 15px 20px;
+        text-decoration: none;
+        background-color: white;
+        color: black;
+        border-radius: 15px;
+    }
+
+    .left a.active, .left a:hover {
+        background-color: grey;
+        color: white;
+        font-weight: bold;
+    }
+
+    .right {
+        width: 80%;
+        height: 100%;
+    }
+    .voters-list {
+        background: white;
+        height: 100%;
+        border-radius: 10px;
+        padding: 20px;
+        overflow-y: auto;
+    }
+</style>
+<body>
+    <div class="navbar">
+        <div class="brand">
+            <img src="../images/logo.png" style="width: 50px;" alt="Logo" class="logo">
+            <div class="brand-name">
+                <h3>Vicente Andaya Senior National High School</h3>
+                <h4>Online Voting System</h4>
+            </div>
+        </div>
+        <div class="user">
+            <img src="../images/profile.png" style="width: 30px; border-radius: 50%;" alt="User" class="user-icon">
+            <span class="username" style="margin-left: 10px; color: white;">John Doe</span>
+            <div class="logout">
+                <button style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 15px;">
+                    <img src="../images/logout.png" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="left">
+            <a href="#">Dashboard</a>
+            <a href="#" class="active">Voters</a>
+            <a href="#">Election</a>
+            <a href="#">Candidates</a>
+            <a href="#">Position</a>
+            <a href="#">View Results</a>
+            <a href="#">Printed Result</a>
+        </div>
+        <div class="right">
+            <div class="voters-list">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f4f4f4;">
+                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Student Name</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Section</th>
+                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Vote Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Maria Santos</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">12 - STEM</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Voted</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Juan Dela Cruz</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">11 - ABM</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Not Voted</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Ana Reyes</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">12 - HUMSS</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Voted</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
