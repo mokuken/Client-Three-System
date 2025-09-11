@@ -120,11 +120,25 @@ def admin_login():
         return redirect(url_for('admin_dashboard'))
     return render_template('admin/login.html')
 
-
 @app.route('/admin/dashboard')
 def admin_dashboard():
     return render_template('admin/dashboard.html')
 
+@app.route('/admin/voters')
+def admin_voters():
+    return render_template('admin/voters.html')
+
+@app.route('/admin/elections')
+def admin_elections():
+    return render_template('admin/elections.html')
+
+@app.route('/admin/candidates')
+def admin_candidates():
+    return render_template('admin/candidates.html')
+
+@app.route('/admin/position')
+def admin_position():
+    return render_template('admin/position.html')
 
 if __name__ == '__main__':
     create_db_and_default_admin()

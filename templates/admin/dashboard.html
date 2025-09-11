@@ -54,7 +54,6 @@
     .left {
         width: 20%;
         height: 100%;
-        border: 1px solid black;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -65,7 +64,6 @@
         text-decoration: none;
         background-color: white;
         color: black;
-        border-bottom: 1px solid black;
         border-radius: 15px;
     }
 
@@ -78,7 +76,6 @@
     .right {
         width: 80%;
         height: 100%;
-        border: 1px solid black;
     }
     .election-status {
         display: grid;
@@ -142,11 +139,11 @@
     </div>
     <div class="main">
         <div class="left">
-            <a href="#" class="active">Dashboard</a>
-            <a href="#">Voters</a>
-            <a href="#">Election</a>
-            <a href="#">Candidates</a>
-            <a href="#">Position</a>
+            <a href="{{ url_for('admin_dashboard') }}" class="active">Dashboard</a>
+            <a href="{{ url_for('admin_voters') }}">Voters</a>
+            <a href="{{ url_for('admin_elections') }}">Election</a>
+            <a href="{{ url_for('admin_candidates') }}">Candidates</a>
+            <a href="{{ url_for('admin_position') }}">Position</a>
             <a href="#">View Results</a>
             <a href="#">Printed Result</a>
         </div>

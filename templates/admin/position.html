@@ -107,11 +107,11 @@
     </div>
     <div class="main">
         <div class="left">
-            <a href="#">Dashboard</a>
-            <a href="#">Voters</a>
-            <a href="#">Election</a>
-            <a href="#" class="active">Candidates</a>
-            <a href="#">Position</a>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_voters') }}">Voters</a>
+            <a href="{{ url_for('admin_elections') }}">Election</a>
+            <a href="{{ url_for('admin_candidates') }}">Candidates</a>
+            <a href="{{ url_for('admin_position') }}" class="active">Position</a>
             <a href="#">View Results</a>
             <a href="#">Printed Result</a>
         </div>
