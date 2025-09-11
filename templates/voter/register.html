@@ -80,7 +80,12 @@
 	</div>
 	<div class="login-container">
 		<h1 style="margin-bottom: 20px;">Voter Registration</h1>
-		<form style="width:100%">
+		<form style="width:100%" method="post" action="{{ url_for('voter_register') }}">
+			{% with messages = get_flashed_messages() %}
+			{% if messages %}
+			<div style="width:100%; margin-bottom:12px; color: #b00020; text-align:center;">{{ messages[0] }}</div>
+			{% endif %}
+			{% endwith %}
 			<label for="school-id">School ID</label>
 			<input type="text" id="school-id" name="school-id" required>
 			<label for="fullname">Full Name</label>
