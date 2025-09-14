@@ -115,6 +115,11 @@
     .registered-voters { grid-area: 1 / 3 / 2 / 4; }
     .ongoing-election { grid-area: 1 / 4 / 2 / 5; }
     .elections { grid-area: 2 / 1 / 4 / 5; }
+    /* Shared table styles */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr { background-color: #f4f4f4; }
+    .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    .data-table td { border-bottom: 1px solid #eee; }
 </style>
 <body>
     <div class="navbar">
@@ -170,19 +175,19 @@
                 </div>
                 <div class="elections">
                     <h2>Elections</h2>
-                    <table style="width: 100%; border-collapse: collapse;">
+                    <table class="data-table">
                         <thead>
-                            <tr style="background-color: #f4f4f4;">
-                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Name</th>
-                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Status</th>
-                                <th style="padding: 10px; border-bottom: 1px solid #ccc; text-align: left;">Date</th>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;">School Council Election</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;">Ongoing</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;">07/25/25</td>
+                                <td>School Council Election</td>
+                                <td>Ongoing</td>
+                                <td>07/25/25</td>
                             </tr>
                         </tbody>
                     </table>

@@ -84,6 +84,82 @@
         padding: 20px;
         overflow-y: auto;
     }
+    /* Modal styles */
+    .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+    }
+    .modal[aria-hidden="false"] {
+        display: flex;
+    }
+    .modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+    }
+    .modal-panel {
+        position: relative;
+        background: #fff;
+        max-width: 720px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        z-index: 2;
+        padding: 18px 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .modal-header h2 { font-size: 1.1rem; }
+    .close-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.6rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .modal-form .form-row { margin-bottom: 12px; display: flex; flex-direction: column; }
+    .modal-form label { margin-bottom: 6px; font-weight: 600; font-size: 0.95rem; }
+    .modal-form input[type="text"], .modal-form input[type="date"], .modal-form textarea, .modal-form select {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+    .modal-form textarea { resize: vertical; }
+    .modal-form .split { display: flex; gap: 12px; }
+    .modal-form .split > div { flex: 1; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+    .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; }
+    .btn-primary { background: #007bff; color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+        .left { display: none; }
+        .modal-panel { padding: 12px; margin: 0 8px; }
+        .modal-form label { font-size: 0.9rem; }
+    }
+    /* compact actions column */
+    .actions-col { width: 140px; white-space: nowrap; text-align: center; }
+    .actions-col a { display: inline-block; vertical-align: middle; }
+
+    /* Shared table styles */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr { background-color: #f4f4f4; }
+    .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    .data-table td { border-bottom: 1px solid #eee; }
 </style>
 <body>
     <div class="navbar">
@@ -118,25 +194,74 @@
         <div class="right">
             <div class="election-list">
                 <div style="display:flex; justify-content: flex-end; margin-bottom: 12px;">
-                    <a href="#" style="padding: 8px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 6px;">Add Election</a>
+                    <button id="openModalBtn" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer;">Add Election</button>
                 </div>
-                <table style="width:100%; border-collapse: collapse;">
+                <!-- Create Election Modal -->
+                <div id="electionModal" class="modal" aria-hidden="true">
+                    <div class="modal-overlay" data-close></div>
+                    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                        <header class="modal-header">
+                            <h2 id="modalTitle">Create New Election</h2>
+                            <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+                        </header>
+                        <form id="electionForm" method="post" action="#" class="modal-form">
+                            <div class="form-row">
+                                <label for="title">Election Title</label>
+                                <input type="text" id="title" name="title" required placeholder="Enter election title">
+                            </div>
+                            <div class="form-row">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" rows="4" placeholder="Describe the election (optional)"></textarea>
+                            </div>
+                            <div class="form-row split">
+                                <div>
+                                    <label for="start_date">Start Date</label>
+                                    <input type="date" id="start_date" name="start_date" required>
+                                </div>
+                                <div>
+                                    <label for="end_date">End Date</label>
+                                    <input type="date" id="end_date" name="end_date" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label for="positions">Position(s) / Category</label>
+                                <input type="text" id="positions" name="positions" placeholder="e.g., President, Vice President or 'All'">
+                            </div>
+                            <div class="form-row">
+                                <label for="status">Status</label>
+                                <select id="status" name="status">
+                                    <option value="Draft">Draft</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Election</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <table class="data-table">
                     <thead>
-                        <tr style="background-color: #f4f4f4;">
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Name of Election</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Status</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Date/Time Start</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Date/Time End</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Actions</th>
+                        <tr>
+                            <th>Name of Election</th>
+                            <th>Status</th>
+                            <th>Date/Time Start</th>
+                            <th>Date/Time End</th>
+                            <th class="actions-col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">S.Y. 2025-2026 Student Government Election</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Ongoing</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">2025-09-10 08:00 AM</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">2025-09-12 05:00 PM</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;"><a href="#" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px;">Edit</a></td>
+                            <td>S.Y. 2025-2026 Student Government Election</td>
+                            <td>Ongoing</td>
+                            <td>2025-09-10 08:00 AM</td>
+                            <td>2025-09-12 05:00 PM</td>
+                            <td class="actions-col">
+                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -144,4 +269,68 @@
         </div>
     </div>
 </body>
+<script>
+    (function () {
+        const openBtn = document.getElementById('openModalBtn');
+        const modal = document.getElementById('electionModal');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const overlay = document.querySelector('#electionModal .modal-overlay');
+        const form = document.getElementById('electionForm');
+
+        function showModal() {
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            // focus the first input
+            setTimeout(() => document.getElementById('title').focus(), 50);
+        }
+
+        function hideModal() {
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        openBtn && openBtn.addEventListener('click', showModal);
+        closeBtn && closeBtn.addEventListener('click', hideModal);
+        cancelBtn && cancelBtn.addEventListener('click', hideModal);
+        overlay && overlay.addEventListener('click', hideModal);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+                hideModal();
+            }
+        });
+
+        form && form.addEventListener('submit', function (e) {
+            // Basic client-side validation: ensure dates are ordered
+            const start = document.getElementById('start_date').value;
+            const end = document.getElementById('end_date').value;
+            if (start && end && start > end) {
+                e.preventDefault();
+                alert('End Date must be the same or after Start Date.');
+                return false;
+            }
+            // Allow normal form submission; backend should handle saving.
+            // Optional: add a small loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+            }
+        });
+
+        // Delete handler
+        document.querySelectorAll('.btn-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (!confirm('Are you sure you want to delete this election?')) return;
+                const href = this.getAttribute('href');
+                if (href && href !== '#') window.location = href;
+                else {
+                    const row = this.closest('tr'); if (row) row.parentNode.removeChild(row);
+                }
+            });
+        });
+    })();
+</script>
 </html>

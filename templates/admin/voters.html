@@ -84,6 +84,11 @@
         padding: 20px;
         overflow-y: auto;
     }
+    /* Shared table styles */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr { background-color: #f4f4f4; }
+    .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    .data-table td { border-bottom: 1px solid #eee; }
 </style>
 <body>
     <div class="navbar">
@@ -117,29 +122,29 @@
         </div>
         <div class="right">
             <div class="voters-list">
-                <table style="width:100%; border-collapse: collapse;">
+                <table class="data-table">
                     <thead>
-                        <tr style="background-color: #f4f4f4;">
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Student Name</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Section</th>
-                            <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left;">Vote Status</th>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Section</th>
+                            <th>Vote Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Maria Santos</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">12 - STEM</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Voted</td>
+                            <td>Maria Santos</td>
+                            <td>12 - STEM</td>
+                            <td>Voted</td>
                         </tr>
                         <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Juan Dela Cruz</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">11 - ABM</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Not Voted</td>
+                            <td>Juan Dela Cruz</td>
+                            <td>11 - ABM</td>
+                            <td>Not Voted</td>
                         </tr>
                         <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Ana Reyes</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">12 - HUMSS</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #eee;">Voted</td>
+                            <td>Ana Reyes</td>
+                            <td>12 - HUMSS</td>
+                            <td>Voted</td>
                         </tr>
                     </tbody>
                 </table>
