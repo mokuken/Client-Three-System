@@ -1,0 +1,86 @@
+<style>
+/* Navbar styles moved from candidates.html to central partial */
+.navbar {
+    background-color: #333;
+    color: #fff;
+    height: 10vh;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.brand .logo { width: 50px; height: auto; display:block; }
+.brand-name h3 { font-size: 1rem; line-height:1; margin-bottom:2px; }
+.brand-name h4 { font-size: 0.85rem; font-weight:400; margin-top:0; opacity:0.9; }
+.user { display:flex; align-items:center; gap:10px; }
+.user .user-icon { width:32px; height:32px; border-radius:50%; object-fit:cover; display:block; border:2px solid rgba(255,255,255,0.08); }
+.username { color:#fff; font-weight:600; font-size:0.95rem; }
+.logout button { padding:8px 12px; background:#dc3545; color:#fff; border:none; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+.logout img { width:16px; height:16px; display:inline-block; }
+@media (max-width:720px) {
+  .brand-name h3 { font-size:0.95rem; }
+  .brand-name h4 { display:none; }
+  .navbar { padding:8px 12px; height:auto; }
+}
+@media (max-width:480px) {
+  .brand-name { display:none; }
+  .username { display:none; }
+  .logout button { padding:6px 8px; }
+}
+.logout button:focus, .open-btn:focus, .close-btn:focus { outline:3px solid rgba(255,255,255,0.15); outline-offset:2px; }
+</style>
+
+<div class="navbar">
+  <div class="brand">
+    <img
+      src="{{ url_for('static', filename='images/logo.png') }}"
+      style="width: 50px"
+      alt="Logo"
+      class="logo"
+    />
+    <div class="brand-name">
+      <h3>Vicente Andaya Senior National High School</h3>
+      <h4>Online Voting System</h4>
+    </div>
+  </div>
+  <div class="user">
+    <img
+      src="{{ url_for('static', filename='images/profile.png') }}"
+      style="width: 30px; border-radius: 50%"
+      alt="User"
+      class="user-icon"
+    />
+    <span class="username" style="margin-left: 10px; color: white"
+      >John Doe</span
+    >
+    <div class="logout">
+      <button
+        style="
+          padding: 10px 15px;
+          background: #dc3545;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-left: 15px;
+        "
+      >
+        <img
+          src="{{ url_for('static', filename='images/logout.png') }}"
+          style="width: 16px; vertical-align: middle; margin-right: 5px"
+          alt="Logout Icon"
+        />
+        Logout
+      </button>
+    </div>
+  </div>
+</div>

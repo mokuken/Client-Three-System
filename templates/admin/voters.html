@@ -20,28 +20,7 @@
         background-position: center;
         background-attachment: fixed; /* keeps it frozen while scrolling */
     }
-    .navbar {
-        background-color: #333;
-        color: white;
-        height: 10vh;
-        padding: 10px 20px;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .user {
-        display: flex;
-        align-items: center;
-    }
+    /* Navbar styles moved to partial: templates/partials/admin_navbar.html */
 
     .main {
         display: flex;
@@ -91,25 +70,7 @@
     .data-table td { border-bottom: 1px solid #eee; }
 </style>
 <body>
-    <div class="navbar">
-        <div class="brand">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" style="width: 50px;" alt="Logo" class="logo">
-            <div class="brand-name">
-                <h3>Vicente Andaya Senior National High School</h3>
-                <h4>Online Voting System</h4>
-            </div>
-        </div>
-        <div class="user">
-            <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 30px; border-radius: 50%;" alt="User" class="user-icon">
-            <span class="username" style="margin-left: 10px; color: white;">John Doe</span>
-            <div class="logout">
-                <button style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 15px;">
-                    <img src="{{ url_for('static', filename='images/logout.png') }}" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
-                    Logout
-                </button>
-            </div>
-        </div>
-    </div>
+    {% include 'partials/admin_navbar.html' %}
     <div class="main">
         <div class="left">
             <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
