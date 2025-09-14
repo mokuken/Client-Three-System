@@ -61,6 +61,8 @@ class Position(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     max_winners = db.Column(db.Integer, nullable=False, default=1)
+    # how many votes a voter may cast for this position (per voter)
+    votes_allowed = db.Column(db.Integer, nullable=False, default=1)
     # election assignment removed; candidates now link to elections
 
 
@@ -315,6 +317,7 @@ def admin_position():
         title = request.form.get('position_title')
         description = request.form.get('position_description')
         max_winners = request.form.get('max_winners')
+        votes_allowed = request.form.get('votes_allowed')
 
         if not title:
             flash('Position title is required')
@@ -328,6 +331,14 @@ def admin_position():
             flash('Maximum winners must be a positive integer')
             return redirect(url_for('admin_position'))
 
+        try:
+            votes_allowed = int(votes_allowed or 1)
+            if votes_allowed < 1:
+                raise ValueError()
+        except ValueError:
+            flash('Votes allowed must be a positive integer')
+            return redirect(url_for('admin_position'))
+
         if position_id:
             pos = Position.query.get(position_id)
             if not pos:
@@ -336,8 +347,9 @@ def admin_position():
             pos.title = title
             pos.description = description
             pos.max_winners = max_winners
+            pos.votes_allowed = votes_allowed
         else:
-            pos = Position(title=title, description=description, max_winners=max_winners)
+            pos = Position(title=title, description=description, max_winners=max_winners, votes_allowed=votes_allowed)
             db.session.add(pos)
         db.session.commit()
         flash('Position saved')

@@ -131,6 +131,10 @@
                                     <label for="max_winners">Maximum Number of Winners</label>
                                     <input type="number" id="max_winners" name="max_winners" min="1" value="1" required>
                                 </div>
+                                <div>
+                                    <label for="votes_allowed">Votes Allowed per Voter</label>
+                                    <input type="number" id="votes_allowed" name="votes_allowed" min="1" value="1" required>
+                                </div>
                                 <!-- election assignment moved to candidates modal -->
                             </div>
                             <div class="form-actions">
@@ -151,14 +155,17 @@
                     <tbody>
                         {% if positions and positions|length > 0 %}
                             {% for p in positions %}
-                                <tr>
-                                    <td>{{ p.title }}</td>
-                                    <td>{{ p.max_winners }}</td>
-                                    <td class="actions-col">
-                                        <a href="#" class="btn-edit" data-id="{{ p.id }}" data-title="{{ p.title|e }}" data-description="{{ p.description|e if p.description else '' }}" data-max_winners="{{ p.max_winners }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                        <a href="#" class="btn-delete" data-id="{{ p.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ p.title }}</td>
+                                        <td>
+                                            <div>Winners: {{ p.max_winners }}</div>
+                                            <div>Votes per voter: {{ p.votes_allowed }}</div>
+                                        </td>
+                                        <td class="actions-col">
+                                            <a href="#" class="btn-edit" data-id="{{ p.id }}" data-title="{{ p.title|e }}" data-description="{{ p.description|e if p.description else '' }}" data-max_winners="{{ p.max_winners }}" data-votes_allowed="{{ p.votes_allowed }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                            <a href="#" class="btn-delete" data-id="{{ p.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
+                                        </td>
+                                    </tr>
                             {% endfor %}
                         {% else %}
                             <tr><td colspan="3">No positions defined.</td></tr>
@@ -206,8 +213,12 @@
 
         form && form.addEventListener('submit', function (e) {
             const maxWinners = parseInt(document.getElementById('max_winners').value, 10);
+            const votesAllowed = parseInt(document.getElementById('votes_allowed').value, 10);
             if (isNaN(maxWinners) || maxWinners < 1) {
                 e.preventDefault(); alert('Maximum number of winners must be 1 or more.'); return false;
+            }
+            if (isNaN(votesAllowed) || votesAllowed < 1) {
+                e.preventDefault(); alert('Votes allowed per voter must be 1 or more.'); return false;
             }
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
@@ -221,12 +232,14 @@
                 const title = this.getAttribute('data-title') || '';
                 const description = this.getAttribute('data-description') || '';
                 const max_winners = this.getAttribute('data-max_winners') || '1';
+                const votes_allowed = this.getAttribute('data-votes_allowed') || '1';
                 const election = this.getAttribute('data-election') || '';
 
                 if (positionIdField) positionIdField.value = id;
                 document.getElementById('position_title').value = title;
                 document.getElementById('position_description').value = description;
                 document.getElementById('max_winners').value = max_winners;
+                document.getElementById('votes_allowed').value = votes_allowed;
                 document.getElementById('positionModalTitle').textContent = 'Edit Position';
                 const submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.textContent = 'Save Changes';
