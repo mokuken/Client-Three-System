@@ -53,6 +53,7 @@ class Candidate(db.Model):
     position = db.Column(db.String(120), nullable=False)
     party = db.Column(db.String(120), nullable=True)
     bio = db.Column(db.Text, nullable=True)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=True)
 
 
 class Position(db.Model):
@@ -60,7 +61,7 @@ class Position(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     max_winners = db.Column(db.Integer, nullable=False, default=1)
-    election_id = db.Column(db.Integer, nullable=True)
+    # election assignment removed; candidates now link to elections
 
 
 
@@ -226,7 +227,8 @@ def admin_candidates():
         positions = Position.query.order_by(Position.title.asc()).all()
     except Exception:
         positions = []
-    return render_template('admin/candidates.html', candidates=candidates, positions=positions)
+    elections = Election.query.order_by(Election.start_date.desc()).all()
+    return render_template('admin/candidates.html', candidates=candidates, positions=positions, elections=elections)
 
 
 @app.route('/admin/candidates', methods=['POST'])
@@ -237,6 +239,7 @@ def admin_create_or_update_candidate():
     position = request.form.get('position')
     party = request.form.get('party')
     bio = request.form.get('bio')
+    election_select = request.form.get('election_id')
 
     if not full_name or not position:
         flash('Please provide candidate name and position')
@@ -264,6 +267,7 @@ def admin_create_or_update_candidate():
         candidate.position = position
         candidate.party = party
         candidate.bio = bio
+        candidate.election_id = election_select or None
         if photo_filename:
             candidate.photo_filename = photo_filename
     else:
@@ -273,6 +277,7 @@ def admin_create_or_update_candidate():
             party=party,
             bio=bio,
             photo_filename=photo_filename,
+            election_id=election_select or None,
         )
         db.session.add(candidate)
     db.session.commit()
@@ -310,7 +315,6 @@ def admin_position():
         title = request.form.get('position_title')
         description = request.form.get('position_description')
         max_winners = request.form.get('max_winners')
-        election_select = request.form.get('election_select')
 
         if not title:
             flash('Position title is required')
@@ -332,9 +336,8 @@ def admin_position():
             pos.title = title
             pos.description = description
             pos.max_winners = max_winners
-            pos.election_id = election_select or None
         else:
-            pos = Position(title=title, description=description, max_winners=max_winners, election_id=election_select or None)
+            pos = Position(title=title, description=description, max_winners=max_winners)
             db.session.add(pos)
         db.session.commit()
         flash('Position saved')

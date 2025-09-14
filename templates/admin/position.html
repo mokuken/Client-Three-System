@@ -170,15 +170,7 @@
                                     <label for="max_winners">Maximum Number of Winners</label>
                                     <input type="number" id="max_winners" name="max_winners" min="1" value="1" required>
                                 </div>
-                                <div>
-                                    <label for="election_select">Election</label>
-                                    <select id="election_select" name="election_select">
-                                        <option value="">-- Select Election --</option>
-                                        {% for el in elections %}
-                                            <option value="{{ el.id }}">{{ el.title }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                                <!-- election assignment moved to candidates modal -->
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" id="cancelPosition">Cancel</button>
@@ -202,7 +194,7 @@
                                     <td>{{ p.title }}</td>
                                     <td>{{ p.max_winners }}</td>
                                     <td class="actions-col">
-                                        <a href="#" class="btn-edit" data-id="{{ p.id }}" data-title="{{ p.title|e }}" data-description="{{ p.description|e if p.description else '' }}" data-max_winners="{{ p.max_winners }}" data-election="{{ p.election_id or '' }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                        <a href="#" class="btn-edit" data-id="{{ p.id }}" data-title="{{ p.title|e }}" data-description="{{ p.description|e if p.description else '' }}" data-max_winners="{{ p.max_winners }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
                                         <a href="#" class="btn-delete" data-id="{{ p.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
                                     </td>
                                 </tr>
@@ -274,7 +266,6 @@
                 document.getElementById('position_title').value = title;
                 document.getElementById('position_description').value = description;
                 document.getElementById('max_winners').value = max_winners;
-                document.getElementById('election_select').value = election;
                 document.getElementById('positionModalTitle').textContent = 'Edit Position';
                 const submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.textContent = 'Save Changes';

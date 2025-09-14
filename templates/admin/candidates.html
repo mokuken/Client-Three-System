@@ -196,6 +196,15 @@
                                 </select>
                             </div>
                             <div class="form-row">
+                                <label for="election_id">Election</label>
+                                <select id="election_id" name="election_id">
+                                    <option value="">-- Select Election (optional) --</option>
+                                    {% for el in elections %}
+                                        <option value="{{ el.id }}">{{ el.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-row">
                                 <label for="party">Party / Affiliation</label>
                                 <input type="text" id="party" name="party" placeholder="Party or team">
                             </div>
@@ -227,7 +236,7 @@
                                     <td>{{ c.full_name }}</td>
                                     <td>{{ c.party or '' }}</td>
                                     <td class="actions-col">
-                                        <a href="#" class="btn-edit" data-id="{{ c.id }}" data-full_name="{{ c.full_name|e }}" data-position="{{ c.position|e }}" data-party="{{ c.party|e if c.party else '' }}" data-bio="{{ c.bio|e if c.bio else '' }}" data-photo="{{ c.photo_filename or '' }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                        <a href="#" class="btn-edit" data-id="{{ c.id }}" data-full_name="{{ c.full_name|e }}" data-position="{{ c.position|e }}" data-party="{{ c.party|e if c.party else '' }}" data-bio="{{ c.bio|e if c.bio else '' }}" data-photo="{{ c.photo_filename or '' }}" data-election="{{ c.election_id or '' }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
                                         <a href="#" class="btn-delete" data-id="{{ c.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
                                     </td>
                                 </tr>
@@ -330,10 +339,12 @@
                 const party = this.getAttribute('data-party') || '';
                 const bio = this.getAttribute('data-bio') || '';
                 const photo = this.getAttribute('data-photo') || '';
+                const election = this.getAttribute('data-election') || '';
 
                 candidateIdInput.value = id;
                 document.getElementById('full_name').value = fullName;
                 document.getElementById('position').value = position;
+                document.getElementById('election_id').value = election;
                 document.getElementById('party').value = party;
                 document.getElementById('bio').value = bio;
                 // show existing photo if available
