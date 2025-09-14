@@ -55,32 +55,29 @@
   <div class="user">
     <img
       src="{{ url_for('static', filename='images/profile.png') }}"
-      style="width: 30px; border-radius: 50%"
+      style="width: 35px; border-radius: 50%"
       alt="User"
       class="user-icon"
     />
     <span class="username" style="margin-left: 10px; color: white"
-      >John Doe</span
+      >Administrator</span
     >
     <div class="logout">
-      <button
-        style="
-          padding: 10px 15px;
-          background: #dc3545;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          margin-left: 15px;
-        "
-      >
-        <img
-          src="{{ url_for('static', filename='images/logout.png') }}"
-          style="width: 16px; vertical-align: middle; margin-right: 5px"
-          alt="Logout Icon"
-        />
-        Logout
-      </button>
+      <form id="logoutForm" method="post" action="{{ url_for('logout') }}" style="display:inline; margin-left:15px;">
+        <button type="submit" id="logoutBtn" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; display:inline-flex; align-items:center; gap:6px;">
+          <img src="{{ url_for('static', filename='images/logout.png') }}" style="width:16px; vertical-align: middle; margin-right:5px;" alt="Logout Icon" />
+          Logout
+        </button>
+      </form>
     </div>
   </div>
 </div>
+<script>
+  // Unobtrusive enhancement: ensure POST is used for logout.
+  (function(){
+    var f = document.getElementById('logoutForm');
+    if (!f) return;
+    // optional: confirm before logging out (commented out)
+    // document.getElementById('logoutBtn').addEventListener('click', function(e){ if(!confirm('Log out?')) e.preventDefault(); });
+  })();
+</script>

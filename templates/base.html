@@ -150,10 +150,12 @@
             <img src="images/profile.png" style="width: 30px; border-radius: 50%;" alt="User" class="user-icon">
             <span class="username" style="margin-left: 10px; color: white;">John Doe</span>
             <div class="logout">
-                <button style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 15px;">
-                    <img src="images/logout.png" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
-                    Logout
-                </button>
+                <form id="logoutFormBase" method="post" action="{{ url_for('logout') }}" style="display:inline; margin-left:15px;">
+                    <button type="submit" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <img src="images/logout.png" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
     </div>
