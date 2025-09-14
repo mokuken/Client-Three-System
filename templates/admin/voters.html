@@ -131,21 +131,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Maria Santos</td>
-                            <td>12 - STEM</td>
-                            <td>Voted</td>
-                        </tr>
-                        <tr>
-                            <td>Juan Dela Cruz</td>
-                            <td>11 - ABM</td>
-                            <td>Not Voted</td>
-                        </tr>
-                        <tr>
-                            <td>Ana Reyes</td>
-                            <td>12 - HUMSS</td>
-                            <td>Voted</td>
-                        </tr>
+                        {% if voters and voters|length > 0 %}
+                            {% for v in voters %}
+                                <tr>
+                                    <td>{{ v.fullname }}</td>
+                                    <td>{{ v.grade or '' }}</td>
+                                    <td>Not Implemented</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="3">No voters yet.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

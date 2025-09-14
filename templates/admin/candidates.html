@@ -173,7 +173,8 @@
                             <h2 id="candidateModalTitle">Add New Candidate</h2>
                             <button class="close-btn" id="closeCandidateModal" aria-label="Close modal">&times;</button>
                         </header>
-                        <form id="candidateForm" method="post" action="#" enctype="multipart/form-data" class="modal-form">
+                        <form id="candidateForm" method="post" action="{{ url_for('admin_create_or_update_candidate') }}" enctype="multipart/form-data" class="modal-form">
+                            <input type="hidden" id="candidate_id" name="candidate_id" value="">
                             <div class="form-row">
                                 <label for="full_name">Candidate Full Name</label>
                                 <input type="text" id="full_name" name="full_name" required placeholder="Full name">
@@ -187,11 +188,11 @@
                                 <label for="position">Position</label>
                                 <select id="position" name="position" required>
                                     <option value="">-- Select Position --</option>
-                                    <!-- TODO: populate server-side with available positions -->
-                                    <option>President</option>
-                                    <option>Vice President</option>
-                                    <option>Secretary</option>
-                                    <option>Treasurer</option>
+                                    {% if positions and positions|length > 0 %}
+                                        {% for p in positions %}
+                                            <option value="{{ p.title }}">{{ p.title }}</option>
+                                        {% endfor %}
+                                    {% endif %}
                                 </select>
                             </div>
                             <div class="form-row">
@@ -219,75 +220,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>President</td>
-                            <td>Maria Santos</td>
-                            <td>Unity</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Vice President</td>
-                            <td>Juan Dela Cruz</td>
-                            <td>Progress</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Secretary</td>
-                            <td>Ana Reyes</td>
-                            <td>Unity</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Treasurer</td>
-                            <td>Mark Lim</td>
-                            <td>Progress</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Auditor</td>
-                            <td>Liza Cruz</td>
-                            <td>Unity</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>PRO</td>
-                            <td>Carlos Mendoza</td>
-                            <td>Progress</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Business Manager</td>
-                            <td>Jenny Tan</td>
-                            <td>Unity</td>
-                            <td>
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Sergeant at Arms</td>
-                            <td>Paul Garcia</td>
-                            <td>Progress</td>
-                            <td><a href="#" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px;">Edit</a></td>
-                        </tr>
+                        {% if candidates and candidates|length > 0 %}
+                            {% for c in candidates %}
+                                <tr>
+                                    <td>{{ c.position }}</td>
+                                    <td>{{ c.full_name }}</td>
+                                    <td>{{ c.party or '' }}</td>
+                                    <td class="actions-col">
+                                        <a href="#" class="btn-edit" data-id="{{ c.id }}" data-full_name="{{ c.full_name|e }}" data-position="{{ c.position|e }}" data-party="{{ c.party|e if c.party else '' }}" data-bio="{{ c.bio|e if c.bio else '' }}" data-photo="{{ c.photo_filename or '' }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                        <a href="#" class="btn-delete" data-id="{{ c.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4">No candidates yet.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -372,21 +319,80 @@
             if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
         });
 
-        // Delete buttons: confirm then remove row or follow href
+        // Edit buttons: populate modal with candidate data
+        const candidateIdInput = document.getElementById('candidate_id');
+        document.querySelectorAll('.btn-edit').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const fullName = this.getAttribute('data-full_name') || '';
+                const position = this.getAttribute('data-position') || '';
+                const party = this.getAttribute('data-party') || '';
+                const bio = this.getAttribute('data-bio') || '';
+                const photo = this.getAttribute('data-photo') || '';
+
+                candidateIdInput.value = id;
+                document.getElementById('full_name').value = fullName;
+                document.getElementById('position').value = position;
+                document.getElementById('party').value = party;
+                document.getElementById('bio').value = bio;
+                // show existing photo if available
+                if (photo) {
+                    if (photoPreviewImg) {
+                        photoPreviewImg.src = '/static/uploads/candidates/' + photo;
+                        photoPreviewWrap.style.display = 'block';
+                    }
+                } else {
+                    if (photoPreviewImg) { photoPreviewImg.src = ''; photoPreviewWrap.style.display = 'none'; }
+                }
+                // change modal title and button
+                const title = document.getElementById('candidateModalTitle');
+                title.textContent = 'Edit Candidate';
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.textContent = 'Save Changes';
+                showModal();
+            });
+        });
+
+        // Delete modal implementation
+        const deleteModal = document.createElement('div');
+        deleteModal.innerHTML = `
+        <div id="deleteCandidateModal" class="modal" aria-hidden="true">
+            <div class="modal-overlay" data-close-delete></div>
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deleteCandidateTitle">
+                <header class="modal-header">
+                    <h2 id="deleteCandidateTitle">Confirm Delete</h2>
+                    <button class="close-btn" id="closeDeleteCandidateModal">&times;</button>
+                </header>
+                <p>Are you sure you want to delete this candidate? This action cannot be undone.</p>
+                <form id="deleteCandidateForm" method="post" action="{{ url_for('admin_delete_candidate') }}" style="margin-top:12px; display:flex; justify-content:flex-end; gap:8px;">
+                    <input type="hidden" id="delete_candidate_id" name="candidate_id" value="">
+                    <button type="button" class="btn btn-secondary" id="cancelDeleteCandidate">Cancel</button>
+                    <button type="submit" class="btn" style="background:#dc3545; color:#fff;">Delete</button>
+                </form>
+            </div>
+        </div>`;
+        document.body.appendChild(deleteModal);
+        const deleteModalEl = document.getElementById('deleteCandidateModal');
+        const deleteOverlay = deleteModalEl && deleteModalEl.querySelector('.modal-overlay');
+        const closeDeleteBtn = document.getElementById('closeDeleteCandidateModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteCandidate');
+        const deleteIdInput = document.getElementById('delete_candidate_id');
+
         document.querySelectorAll('.btn-delete').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this candidate?')) return;
-                const href = this.getAttribute('href');
-                if (href && href !== '#') {
-                    window.location = href;
-                } else {
-                    // optimistic UI removal
-                    const row = this.closest('tr');
-                    if (row) row.parentNode.removeChild(row);
-                }
+                const id = this.getAttribute('data-id');
+                if (!id) return;
+                deleteIdInput.value = id;
+                deleteModalEl.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
             });
         });
+
+        deleteOverlay && deleteOverlay.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
+        closeDeleteBtn && closeDeleteBtn.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
+        cancelDeleteBtn && cancelDeleteBtn.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
     })();
 </script>
 </html>

@@ -204,7 +204,8 @@
                             <h2 id="modalTitle">Create New Election</h2>
                             <button class="close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
                         </header>
-                        <form id="electionForm" method="post" action="#" class="modal-form">
+                        <form id="electionForm" method="post" action="{{ url_for('admin_elections') }}" class="modal-form">
+                            <input type="hidden" id="election_id" name="election_id" value="">
                             <div class="form-row">
                                 <label for="title">Election Title</label>
                                 <input type="text" id="title" name="title" required placeholder="Enter election title">
@@ -253,22 +254,46 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>S.Y. 2025-2026 Student Government Election</td>
-                            <td>Ongoing</td>
-                            <td>2025-09-10 08:00 AM</td>
-                            <td>2025-09-12 05:00 PM</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
+                        {% if elections and elections|length > 0 %}
+                            {% for e in elections %}
+                                <tr>
+                                    <td>{{ e.title }}</td>
+                                    <td>{{ e.status }}</td>
+                                    <td>{{ e.start_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ e.end_date.strftime('%Y-%m-%d') }}</td>
+                                    <td class="actions-col">
+                                        <a href="#" class="btn-edit" data-id="{{ e.id }}" data-title="{{ e.title|e }}" data-description="{{ e.description|e if e.description else '' }}" data-start="{{ e.start_date.isoformat() }}" data-end="{{ e.end_date.isoformat() }}" data-positions="{{ e.positions|e if e.positions else '' }}" data-status="{{ e.status }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                        <a href="#" class="btn-delete" data-id="{{ e.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5">There are currently no active elections. Please check back later.</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </body>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" aria-hidden="true">
+    <div class="modal-overlay" data-close-delete></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <header class="modal-header">
+            <h2 id="deleteModalTitle">Confirm Delete</h2>
+            <button class="close-btn" id="closeDeleteModalBtn" aria-label="Close modal">&times;</button>
+        </header>
+        <p>Are you sure you want to delete this election? This action cannot be undone.</p>
+        <form id="deleteForm" method="post" action="{{ url_for('admin_delete_election') }}" style="margin-top:12px; display:flex; justify-content:flex-end; gap:8px;">
+            <input type="hidden" id="delete_election_id" name="election_id" value="">
+            <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background:#dc3545;">Delete</button>
+        </form>
+    </div>
+</div>
 <script>
     (function () {
         const openBtn = document.getElementById('openModalBtn');
@@ -276,7 +301,9 @@
         const closeBtn = document.getElementById('closeModalBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const overlay = document.querySelector('#electionModal .modal-overlay');
-        const form = document.getElementById('electionForm');
+    const form = document.getElementById('electionForm');
+    const electionIdInput = document.getElementById('election_id');
+    const modalTitle = document.getElementById('modalTitle');
 
         function showModal() {
             modal.setAttribute('aria-hidden', 'false');
@@ -301,7 +328,7 @@
             }
         });
 
-        form && form.addEventListener('submit', function (e) {
+    form && form.addEventListener('submit', function (e) {
             // Basic client-side validation: ensure dates are ordered
             const start = document.getElementById('start_date').value;
             const end = document.getElementById('end_date').value;
@@ -319,18 +346,63 @@
             }
         });
 
-        // Delete handler
+        // Edit handler: populate modal with election data
+        document.querySelectorAll('.btn-edit').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const title = this.getAttribute('data-title') || '';
+                const description = this.getAttribute('data-description') || '';
+                const start = this.getAttribute('data-start') || '';
+                const end = this.getAttribute('data-end') || '';
+                const positions = this.getAttribute('data-positions') || '';
+                const status = this.getAttribute('data-status') || 'Draft';
+
+                electionIdInput.value = id;
+                document.getElementById('title').value = title;
+                document.getElementById('description').value = description;
+                document.getElementById('start_date').value = start;
+                document.getElementById('end_date').value = end;
+                document.getElementById('positions').value = positions;
+                document.getElementById('status').value = status;
+
+                modalTitle.textContent = 'Edit Election';
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.textContent = 'Save Changes';
+                showModal();
+            });
+        });
+
+        // Delete modal handlers
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteOverlay = document.querySelector('#deleteModal .modal-overlay');
+        const closeDeleteBtn = document.getElementById('closeDeleteModalBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const deleteIdInput = document.getElementById('delete_election_id');
+
+        function showDeleteModal() {
+            deleteModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function hideDeleteModal() {
+            deleteModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            deleteIdInput.value = '';
+        }
+
         document.querySelectorAll('.btn-delete').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this election?')) return;
-                const href = this.getAttribute('href');
-                if (href && href !== '#') window.location = href;
-                else {
-                    const row = this.closest('tr'); if (row) row.parentNode.removeChild(row);
-                }
+                const id = this.getAttribute('data-id');
+                if (!id) return;
+                deleteIdInput.value = id;
+                showDeleteModal();
             });
         });
+
+        deleteOverlay && deleteOverlay.addEventListener('click', hideDeleteModal);
+        closeDeleteBtn && closeDeleteBtn.addEventListener('click', hideDeleteModal);
+        cancelDeleteBtn && cancelDeleteBtn.addEventListener('click', hideDeleteModal);
     })();
 </script>
 </html>

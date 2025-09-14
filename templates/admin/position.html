@@ -155,7 +155,8 @@
                             <h2 id="positionModalTitle">Create New Position</h2>
                             <button class="close-btn" id="closePositionModal" aria-label="Close modal">&times;</button>
                         </header>
-                        <form id="positionForm" method="post" action="#" class="modal-form">
+                        <form id="positionForm" method="post" action="{{ url_for('admin_position') }}" class="modal-form">
+                            <input type="hidden" id="position_id" name="position_id" value="">
                             <div class="form-row">
                                 <label for="position_title">Position Title</label>
                                 <input type="text" id="position_title" name="position_title" required placeholder="e.g., President">
@@ -171,11 +172,11 @@
                                 </div>
                                 <div>
                                     <label for="election_select">Election</label>
-                                    <select id="election_select" name="election_select" required>
+                                    <select id="election_select" name="election_select">
                                         <option value="">-- Select Election --</option>
-                                        <!-- TODO: populate server-side with available elections -->
-                                        <option>Student Government 2025</option>
-                                        <option>Club Officers 2025</option>
+                                        {% for el in elections %}
+                                            <option value="{{ el.id }}">{{ el.title }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
@@ -195,67 +196,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>President</td>
-                            <td>1</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Vice President</td>
-                            <td>2</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Secretary</td>
-                            <td>3</td>
-                            <td class="actions-col">
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Treasurer</td>
-                            <td>4</td>
-                            <td>
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Auditor</td>
-                            <td>5</td>
-                            <td>
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>PRO</td>
-                            <td>6</td>
-                            <td>
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Business Manager</td>
-                            <td>7</td>
-                            <td>
-                                <a href="#" class="btn-edit" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
-                                <a href="#" class="btn-delete" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Sergeant at Arms</td>
-                            <td>8</td>
-                            <td><a href="#" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px;">Edit</a></td>
-                        </tr>
+                        {% if positions and positions|length > 0 %}
+                            {% for p in positions %}
+                                <tr>
+                                    <td>{{ p.title }}</td>
+                                    <td>{{ p.max_winners }}</td>
+                                    <td class="actions-col">
+                                        <a href="#" class="btn-edit" data-id="{{ p.id }}" data-title="{{ p.title|e }}" data-description="{{ p.description|e if p.description else '' }}" data-max_winners="{{ p.max_winners }}" data-election="{{ p.election_id or '' }}" style="padding:6px 10px; background:#ffc107; color:#000; text-decoration:none; border-radius:5px; margin-right:6px;">Edit</a>
+                                        <a href="#" class="btn-delete" data-id="{{ p.id }}" style="padding:6px 10px; background:#dc3545; color:#fff; text-decoration:none; border-radius:5px;">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="3">No positions defined.</td></tr>
+                        {% endif %}
+                    </tbody>
                     </tbody>
                 </table>
             </div>
@@ -292,6 +247,10 @@
             if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') hideModal();
         });
 
+        const positionIdInput = document.createElement('input');
+        // we already have a hidden input in the form; ensure we reference it
+        const positionIdField = document.getElementById('position_id');
+
         form && form.addEventListener('submit', function (e) {
             const maxWinners = parseInt(document.getElementById('max_winners').value, 10);
             if (isNaN(maxWinners) || maxWinners < 1) {
@@ -301,18 +260,67 @@
             if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
         });
 
-        // Delete buttons handler
+        // Edit buttons: populate modal
+        document.querySelectorAll('.btn-edit').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const title = this.getAttribute('data-title') || '';
+                const description = this.getAttribute('data-description') || '';
+                const max_winners = this.getAttribute('data-max_winners') || '1';
+                const election = this.getAttribute('data-election') || '';
+
+                if (positionIdField) positionIdField.value = id;
+                document.getElementById('position_title').value = title;
+                document.getElementById('position_description').value = description;
+                document.getElementById('max_winners').value = max_winners;
+                document.getElementById('election_select').value = election;
+                document.getElementById('positionModalTitle').textContent = 'Edit Position';
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.textContent = 'Save Changes';
+                showModal();
+            });
+        });
+
+        // Delete modal
+        const deleteModal = document.createElement('div');
+        deleteModal.innerHTML = `
+        <div id="deletePositionModal" class="modal" aria-hidden="true">
+            <div class="modal-overlay" data-close-delete></div>
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="deletePositionTitle">
+                <header class="modal-header">
+                    <h2 id="deletePositionTitle">Confirm Delete</h2>
+                    <button class="close-btn" id="closeDeletePositionModal">&times;</button>
+                </header>
+                <p>Are you sure you want to delete this position? This action cannot be undone.</p>
+                <form id="deletePositionForm" method="post" action="{{ url_for('admin_delete_position') }}" style="margin-top:12px; display:flex; justify-content:flex-end; gap:8px;">
+                    <input type="hidden" id="delete_position_id" name="position_id" value="">
+                    <button type="button" class="btn btn-secondary" id="cancelDeletePosition">Cancel</button>
+                    <button type="submit" class="btn" style="background:#dc3545; color:#fff;">Delete</button>
+                </form>
+            </div>
+        </div>`;
+        document.body.appendChild(deleteModal);
+        const deleteModalEl = document.getElementById('deletePositionModal');
+        const deleteOverlay = deleteModalEl && deleteModalEl.querySelector('.modal-overlay');
+        const closeDeleteBtn = document.getElementById('closeDeletePositionModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeletePosition');
+        const deleteIdInput = document.getElementById('delete_position_id');
+
         document.querySelectorAll('.btn-delete').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this position?')) return;
-                const href = this.getAttribute('href');
-                if (href && href !== '#') window.location = href;
-                else {
-                    const row = this.closest('tr'); if (row) row.parentNode.removeChild(row);
-                }
+                const id = this.getAttribute('data-id');
+                if (!id) return;
+                deleteIdInput.value = id;
+                deleteModalEl.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
             });
         });
+
+        deleteOverlay && deleteOverlay.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
+        closeDeleteBtn && closeDeleteBtn.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
+        cancelDeleteBtn && cancelDeleteBtn.addEventListener('click', function () { deleteModalEl.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; deleteIdInput.value = ''; });
     })();
 </script>
 </html>
