@@ -87,6 +87,20 @@
         font-size: 16px;
     }
 
+    /* make sure the vote button sits at the bottom of the card
+       even when some content (like party) is missing */
+    .candidates .candidate {
+        display: flex;            /* ensure flex in case specificity changed */
+        flex-direction: column;
+        justify-content: flex-start; /* default, let button push with auto margin */
+        height: 100%;
+        min-height: 240px;        /* give cards consistent height */
+    }
+
+    .vote-btn {
+        margin-top: auto; /* push button to bottom of the card */
+    }
+
     .voted {
         display: flex;
         align-items: center;
