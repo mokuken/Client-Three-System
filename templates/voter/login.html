@@ -70,6 +70,25 @@
 		.login-container button:hover {
 			background: #2471a3;
 		}
+		/* admin login floating button */
+		.admin-fab {
+			position: fixed;
+			right: 18px;
+			bottom: 18px;
+			background: #6CFF7A;
+			color: #062e13;
+			padding: 12px 14px;
+			border-radius: 999px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+			text-decoration: none;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 9999;
+			border: 2px solid rgba(0,0,0,0.08);
+		}
+		.admin-fab:hover { transform: translateY(-2px); }
 	</style>
 </head>
 <body>
@@ -97,5 +116,6 @@
 			</div>
 		</form>
 	</div>
+	<a class="admin-fab" href="{{ url_for('admin_login') }}" aria-label="Admin login">Admin</a>
 </body>
 </html>

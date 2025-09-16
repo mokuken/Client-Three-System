@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        height: 100vh;
+        background-image: url("{{ url_for('static', filename='images/base-bg.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* keeps it frozen while scrolling */
+    }
+    .navbar {
+        background-color: #fff;
+        color: #000;
+        height: 10vh;
+        padding: 10px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user {
+        display: flex;
+        align-items: center;
+    }
+
+    .main {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+    .container {
+        max-width: 900px;
+        width: 100%;
+        padding: 20px;
+    }
+    .no-voting {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(80vh - 40px);
+    }
+    .no-voting__card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        padding: 36px 28px;
+        text-align: center;
+        max-width: 640px;
+        width: 100%;
+        backdrop-filter: blur(4px);
+    }
+    .no-voting__card h2 {
+        font-size: 1.6rem;
+        color: #222;
+        margin-bottom: 10px;
+    }
+    .no-voting__card p {
+        color: #555;
+        line-height: 1.4;
+        margin-bottom: 18px;
+    }
+    .no-voting__actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .btn--primary {
+        background: #0d6efd;
+        color: #fff;
+    }
+    .btn--secondary {
+        background: transparent;
+        color: #0d6efd;
+        border: 1px solid rgba(13,110,253,0.18);
+    }
+    @media (max-width: 480px) {
+        .no-voting__card { padding: 24px 16px; }
+        .no-voting__card h2 { font-size: 1.25rem; }
+    }
+</style>
+<body>
+    <div class="navbar">
+        <div class="brand">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" style="width: 50px;" alt="Logo" class="logo">
+            <div class="brand-name">
+                <h3>Vicente Andaya Senior National High School</h3>
+                <h4>Online Voting System</h4>
+            </div>
+        </div>
+        <div class="user">
+            <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 30px; border-radius: 50%;" alt="User" class="user-icon">
+            <span class="username" style="margin-left: 10px;">John Doe</span>
+            <div class="logout">
+                <form id="logoutFormVote" method="post" action="{{ url_for('logout') }}" style="display:inline; margin-left:15px;">
+                    <button type="submit" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <img src="{{ url_for('static', filename='images/logout.png') }}" style="width: 16px; vertical-align: middle; margin-right: 5px;" alt="Logout Icon">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="container">
+            <div class="no-voting" role="status" aria-live="polite">
+                <div class="no-voting__card">
+                    <h2>No Active Elections</h2>
+                    <p>There are currently no active elections available for voting. Please check back later. If you think this is an error, contact your administrator.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

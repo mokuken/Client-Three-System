@@ -94,7 +94,7 @@ def voter_login():
             flash('Invalid school ID or password')
             return redirect(url_for('voter_login'))
         flash('Voter logged in successfully')
-        return redirect(url_for('voter_vote'))
+        return redirect(url_for('voter_select'))
     return render_template('voter/login.html')
 
 
@@ -134,6 +134,16 @@ def voter_register():
 def voter_vote():
     # Simple landing page after successful voter login
     return render_template('voter/vote.html')
+
+
+@app.route('/voter/select')
+def voter_select():
+    # list elections for voter to choose from
+    try:
+        elections = Election.query.order_by(Election.start_date.desc()).all()
+    except Exception:
+        elections = []
+    return render_template('voter/select_election.html', elections=elections)
 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
