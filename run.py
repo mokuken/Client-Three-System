@@ -156,13 +156,26 @@ def voter_vote():
         candidates = []
 
     positions = {}
+    # mapping of position title -> max_winners (default 1)
+    position_limits = {}
     for c in candidates:
-        positions.setdefault(c.position or 'Other', []).append(c)
+        pos_title = c.position or 'Other'
+        positions.setdefault(pos_title, []).append(c)
+
+    # try to fetch Position records to get max_winners per title
+    try:
+        all_positions = Position.query.all()
+        for p in all_positions:
+            if p and p.title:
+                position_limits[p.title] = int(p.max_winners or 1)
+    except Exception:
+        # fallback: default 1 for any position
+        position_limits = {}
 
     # positions_list: list of tuples (position_title, candidates_list)
     positions_list = list(positions.items())
 
-    return render_template('voter/vote.html', election=election, positions=positions_list)
+    return render_template('voter/vote.html', election=election, positions=positions_list, position_limits=position_limits)
 
 
 @app.route('/voter/submit_votes', methods=['POST'])

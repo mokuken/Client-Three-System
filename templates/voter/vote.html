@@ -176,7 +176,7 @@
                         <p class="small">{{ election.description or '' }}</p>
                     </div>
                     {% for position_title, candidates in positions %}
-                        <div class="position" data-position="{{ position_title }}" style="margin-top:18px;">
+                        <div class="position" data-position="{{ position_title }}" data-max-winners="{{ position_limits.get(position_title, 1) if position_limits is defined else 1 }}" style="margin-top:18px;">
                             <div class="position-header">
                                 <h1>{{ position_title }}</h1>
                                 <h3>Select your choice(s) for this position</h3>
@@ -229,8 +229,8 @@
     </div>
 
     <script>
-        // Track selections: { positionTitle: candidateId }
-        const selections = {};
+    // Track selections: { positionTitle: [candidateId, ...] }
+    const selections = {};
 
         function markSelectedCard(cardEl, selected) {
             const voted = cardEl.querySelector('.voted');
@@ -248,6 +248,10 @@
         document.querySelectorAll('.candidate').forEach(card => {
             const btn = card.querySelector('.vote-btn');
             const position = card.getAttribute('data-position');
+            // per-position limit (max winners)
+            const positionEl = card.closest('.position');
+            const maxWinnersAttr = positionEl ? positionEl.getAttribute('data-max-winners') : null;
+            const maxWinners = maxWinnersAttr ? parseInt(maxWinnersAttr, 10) : 1;
             const candidateId = card.getAttribute('data-candidate-id');
 
             // style primary green by default
@@ -255,24 +259,28 @@
             btn.style.color = '#fff';
 
             btn.addEventListener('click', () => {
-                // single-choice per position: deselect any other in same position
-                document.querySelectorAll(`.candidate[data-position="${position}"]`).forEach(other => {
-                    if (other === card) return;
-                    const otherId = other.getAttribute('data-candidate-id');
-                    if (selections[position] && selections[position].toString() === otherId) {
-                        delete selections[position];
-                        markSelectedCard(other, false);
-                    }
-                });
-
-                // toggle this selection
-                if (selections[position] && selections[position].toString() === candidateId) {
-                    delete selections[position];
+                // multi-choice up to maxWinners: toggle this candidate
+                selections[position] = selections[position] || [];
+                const idx = selections[position].findIndex(id => id.toString() === candidateId);
+                if (idx !== -1) {
+                    // currently selected -> remove
+                    selections[position].splice(idx, 1);
                     markSelectedCard(card, false);
                 } else {
-                    selections[position] = parseInt(candidateId);
+                    // not selected -> ensure we don't exceed limit
+                    if (selections[position].length >= maxWinners) {
+                        alert(`You may select up to ${maxWinners} candidate(s) for ${position}.`);
+                        return;
+                    }
+                    selections[position].push(parseInt(candidateId));
                     markSelectedCard(card, true);
                 }
+                // update other cards' visual state in this position
+                document.querySelectorAll(`.candidate[data-position="${position}"]`).forEach(other => {
+                    const otherId = other.getAttribute('data-candidate-id');
+                    const isSelected = selections[position].some(id => id.toString() === otherId);
+                    markSelectedCard(other, isSelected);
+                });
             });
         });
 
@@ -286,7 +294,7 @@
             const content = document.getElementById('previewContent');
             content.innerHTML = '';
 
-            // for each position, show selected candidate in same card design
+            // for each position, show selected candidate(s) in same card design
             document.querySelectorAll('.position').forEach(pos => {
                 const posTitle = pos.getAttribute('data-position');
                 const wrapper = document.createElement('div');
@@ -296,25 +304,26 @@
                 const h = document.createElement('h3');
                 h.textContent = posTitle;
                 wrapper.appendChild(h);
-
-                const selId = selections[posTitle];
-                if (!selId) {
+                const selIds = selections[posTitle] || [];
+                if (!selIds || selIds.length === 0) {
                     const p = document.createElement('div');
                     p.textContent = 'No selection';
                     p.className = 'small';
                     wrapper.appendChild(p);
                 } else {
-                    const card = pos.querySelector(`.candidate[data-candidate-id="${selId}"]`);
-                    if (card) {
-                        // clone a simplified card look
-                        const clone = card.cloneNode(true);
-                        clone.style.width = '100%';
-                        clone.querySelector('.vote-btn').remove();
-                        // ensure voted badge is visible
-                        const voted = clone.querySelector('.voted');
-                        if (voted) voted.style.display = 'flex';
-                        wrapper.appendChild(clone);
-                    }
+                    selIds.forEach(sid => {
+                        const card = pos.querySelector(`.candidate[data-candidate-id="${sid}"]`);
+                        if (card) {
+                            // clone a simplified card look
+                            const clone = card.cloneNode(true);
+                            clone.style.width = '100%';
+                            const btn = clone.querySelector('.vote-btn'); if (btn) btn.remove();
+                            // ensure voted badge is visible
+                            const voted = clone.querySelector('.voted');
+                            if (voted) voted.style.display = 'flex';
+                            wrapper.appendChild(clone);
+                        }
+                    });
                 }
                 content.appendChild(wrapper);
             });
