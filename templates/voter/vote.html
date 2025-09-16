@@ -130,7 +130,7 @@
     }
     .review-btn img { width: 18px; height: 18px; }
 </style>
-<body>
+<body data-election-id="{{ election.id if election else '' }}" data-submit-url="{{ url_for('voter_submit_votes') }}" data-select-url="{{ url_for('voter_select') }}">
     <div class="navbar">
         <div class="brand">
             <img src="{{ url_for('static', filename='images/logo.png') }}" style="width: 50px;" alt="Logo" class="logo">
@@ -152,66 +152,202 @@
             </div>
         </div>
     </div>
+</div>
     <div class="main">
         <div class="container">
-            <div class="position">
-                <div class="position-header">
-                    <h1>President</h1>
-                    <h3>Choose your student body president</h3>
-                </div>
-                <div class="candidates">
-                    <div class="candidate">
-                        <div class="voted">
-                                <img src="{{ url_for('static', filename='images/check.png') }}" style="width: 20px; height: 20px;" alt="Voted">
-                            <span style="color: green; font-weight: bold;">Voted</span>
+            {% if election and positions and positions|length > 0 %}
+                <div style="padding: 18px; border-radius:12px;">
+                    <div style="background-color: white;padding: 12px;border-radius: 12px;">
+                        <h2 style="margin-bottom:6px">{{ election.title }}</h2>
+                        <p class="small">{{ election.description or '' }}</p>
+                    </div>
+                    {% for position_title, candidates in positions %}
+                        <div class="position" data-position="{{ position_title }}" style="margin-top:18px;">
+                            <div class="position-header">
+                                <h1>{{ position_title }}</h1>
+                                <h3>Select your choice(s) for this position</h3>
+                            </div>
+                            <div class="candidates">
+                                {% for c in candidates %}
+                                    <div class="candidate" data-candidate-id="{{ c.id }}" data-position="{{ position_title }}">
+                                        <div class="voted" style="display:none;">
+                                            <img src="{{ url_for('static', filename='images/check.png') }}" style="width: 20px; height: 20px;" alt="Voted">
+                                            <span style="color: green; font-weight: bold;">Voted</span>
+                                        </div>
+                                        {% if c.photo_filename %}
+                                            <img src="{{ url_for('static', filename='uploads/candidates/' + c.photo_filename) }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="{{ c.full_name }}">
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="{{ c.full_name }}">
+                                        {% endif %}
+                                        <h3>{{ c.full_name }}</h3>
+                                        <h5>{{ c.party or '' }}</h5>
+                                        <button class="vote-btn">Vote</button>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Candidate 1">
-                        <h3>Sarah Johnson</h3>
-                        <h5>Unity Party</h5>
-                        <button class="cancel-vote-btn">Cancel Vote</button>
-                    </div>
-                    <div class="candidate">
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Candidate 1">
-                        <h3>Sarah Johnson</h3>
-                        <h5>Unity Party</h5>
-                        <button class="vote-btn">Vote</button>
-                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="position">
-                <div class="position-header">
-                    <h1>President</h1>
-                    <h3>Choose your student body president</h3>
+            {% else %}
+                <div style="background: rgba(255,255,255,0.95); padding: 18px; border-radius:12px;">
+                    <h3>No candidates available for this election.</h3>
                 </div>
-                <div class="candidates">
-                    <div class="candidate">
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Candidate 1">
-                        <h3>Sarah Johnson</h3>
-                        <h5>Unity Party</h5>
-                        <button class="vote-btn">Vote</button>
-                    </div>
-                    <div class="candidate">
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Candidate 1">
-                        <h3>Sarah Johnson</h3>
-                        <h5>Unity Party</h5>
-                        <button class="vote-btn">Vote</button>
-                    </div>
-                    <div class="candidate">
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" style="width: 100px; height: 100px; border-radius: 50%;" alt="Candidate 1">
-                        <h3>Sarah Johnson</h3>
-                        <h5>Unity Party</h5>
-                        <button class="vote-btn">Vote</button>
-                    </div>
-
-                </div>
-            </div>
+            {% endif %}
         </div>
     </div>
-</div>
+
     <!-- Floating Review Button -->
-    <button class="review-btn" id="reviewVouteBtn">
+    <button class="review-btn" id="reviewVoteBtn">
         <img src="{{ url_for('static', filename='images/check.png') }}" alt="Review">
         Review Vote
     </button>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" style="display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:white; width:90%; max-width:800px; border-radius:12px; padding:18px; max-height:85%; overflow:auto;">
+            <h2>Review your selections</h2>
+            <div id="previewContent" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px;">
+                <button id="closePreview" class="btn btn--secondary">Back</button>
+                <button id="submitPreview" class="btn btn--primary">Submit Votes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track selections: { positionTitle: candidateId }
+        const selections = {};
+
+        function markSelectedCard(cardEl, selected) {
+            const voted = cardEl.querySelector('.voted');
+            const voteBtn = cardEl.querySelector('.vote-btn');
+                if (selected) {
+                    if (voted) voted.style.display = 'flex';
+                    if (voteBtn) { voteBtn.textContent = 'Cancel Vote'; voteBtn.style.backgroundColor = '#dc3545'; }
+                } else {
+                    if (voted) voted.style.display = 'none';
+                    if (voteBtn) { voteBtn.textContent = 'Vote'; voteBtn.style.backgroundColor = '#28a745'; }
+                }
+        }
+
+        // initialize buttons
+        document.querySelectorAll('.candidate').forEach(card => {
+            const btn = card.querySelector('.vote-btn');
+            const position = card.getAttribute('data-position');
+            const candidateId = card.getAttribute('data-candidate-id');
+
+            // style primary green by default
+            btn.style.backgroundColor = '#28a745';
+            btn.style.color = '#fff';
+
+            btn.addEventListener('click', () => {
+                // single-choice per position: deselect any other in same position
+                document.querySelectorAll(`.candidate[data-position="${position}"]`).forEach(other => {
+                    if (other === card) return;
+                    const otherId = other.getAttribute('data-candidate-id');
+                    if (selections[position] && selections[position].toString() === otherId) {
+                        delete selections[position];
+                        markSelectedCard(other, false);
+                    }
+                });
+
+                // toggle this selection
+                if (selections[position] && selections[position].toString() === candidateId) {
+                    delete selections[position];
+                    markSelectedCard(card, false);
+                } else {
+                    selections[position] = parseInt(candidateId);
+                    markSelectedCard(card, true);
+                }
+            });
+        });
+
+        // Review button
+        document.getElementById('reviewVoteBtn').addEventListener('click', () => {
+            openPreview();
+        });
+
+        function openPreview() {
+            const preview = document.getElementById('previewModal');
+            const content = document.getElementById('previewContent');
+            content.innerHTML = '';
+
+            // for each position, show selected candidate in same card design
+            document.querySelectorAll('.position').forEach(pos => {
+                const posTitle = pos.getAttribute('data-position');
+                const wrapper = document.createElement('div');
+                wrapper.style.background = '#f8f9fa';
+                wrapper.style.padding = '10px';
+                wrapper.style.borderRadius = '8px';
+                const h = document.createElement('h3');
+                h.textContent = posTitle;
+                wrapper.appendChild(h);
+
+                const selId = selections[posTitle];
+                if (!selId) {
+                    const p = document.createElement('div');
+                    p.textContent = 'No selection';
+                    p.className = 'small';
+                    wrapper.appendChild(p);
+                } else {
+                    const card = pos.querySelector(`.candidate[data-candidate-id="${selId}"]`);
+                    if (card) {
+                        // clone a simplified card look
+                        const clone = card.cloneNode(true);
+                        clone.style.width = '100%';
+                        clone.querySelector('.vote-btn').remove();
+                        // ensure voted badge is visible
+                        const voted = clone.querySelector('.voted');
+                        if (voted) voted.style.display = 'flex';
+                        wrapper.appendChild(clone);
+                    }
+                }
+                content.appendChild(wrapper);
+            });
+
+            preview.style.display = 'flex';
+        }
+
+        document.getElementById('closePreview').addEventListener('click', () => {
+            document.getElementById('previewModal').style.display = 'none';
+        });
+
+        document.getElementById('submitPreview').addEventListener('click', async () => {
+            const btn = document.getElementById('submitPreview');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const bodyEl = document.body;
+            const submitUrl = bodyEl.getAttribute('data-submit-url');
+            const selectUrl = bodyEl.getAttribute('data-select-url');
+            const electionIdAttr = bodyEl.getAttribute('data-election-id');
+            const electionId = electionIdAttr ? parseInt(electionIdAttr, 10) : null;
+
+            const payload = { election_id: electionId, selections };
+
+            try {
+                const res = await fetch(submitUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    // close modal and show simple confirmation
+                    document.getElementById('previewModal').style.display = 'none';
+                    alert('Votes submitted successfully');
+                    // optionally redirect back to select page
+                    window.location.href = selectUrl;
+                } else {
+                    alert('Submission failed: ' + (data.message || res.statusText));
+                }
+            } catch (err) {
+                alert('Submission error: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Votes';
+            }
+        });
+    </script>
 </body>
 </html>

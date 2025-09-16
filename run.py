@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -132,8 +132,53 @@ def voter_register():
 
 @app.route('/voter/vote')
 def voter_vote():
-    # Simple landing page after successful voter login
-    return render_template('voter/vote.html')
+    # Render voting page for a specific election. Expects ?election_id=<id>
+    election_id = request.args.get('election_id')
+    if not election_id:
+        flash('No election selected')
+        return redirect(url_for('voter_select'))
+
+    try:
+        election_id_int = int(election_id)
+    except (ValueError, TypeError):
+        flash('Invalid election selected')
+        return redirect(url_for('voter_select'))
+
+    election = Election.query.get(election_id_int)
+    if not election:
+        flash('Election not found')
+        return redirect(url_for('voter_select'))
+
+    # load candidates for that election and group by position
+    try:
+        candidates = Candidate.query.filter_by(election_id=election_id_int).order_by(Candidate.full_name.asc()).all()
+    except Exception:
+        candidates = []
+
+    positions = {}
+    for c in candidates:
+        positions.setdefault(c.position or 'Other', []).append(c)
+
+    # positions_list: list of tuples (position_title, candidates_list)
+    positions_list = list(positions.items())
+
+    return render_template('voter/vote.html', election=election, positions=positions_list)
+
+
+@app.route('/voter/submit_votes', methods=['POST'])
+def voter_submit_votes():
+    # Accepts JSON { election_id: int, selections: { position: candidate_id, ... } }
+    data = request.get_json(silent=True) or {}
+    election_id = data.get('election_id')
+    selections = data.get('selections')
+
+    if not election_id or not selections:
+        return jsonify({'success': False, 'message': 'Missing election or selections'}), 400
+
+    # Note: this endpoint currently does not persist votes to the database.
+    # It validates payload shape and returns success. Persisting votes and
+    # voter-authenticated submissions can be added in a follow-up change.
+    return jsonify({'success': True, 'message': 'Votes submitted successfully'})
 
 
 @app.route('/voter/select')
