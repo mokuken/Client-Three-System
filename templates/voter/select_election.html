@@ -46,12 +46,17 @@
     .main {
         display: flex;
         justify-content: center;
+        align-items: center;
         padding: 20px;
+        min-height: calc(100vh - 10vh); /* leave space for navbar */
     }
     .container {
         max-width: 900px;
         width: 100%;
         padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     .no-voting {
         display: flex;
@@ -65,7 +70,7 @@
         box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         padding: 36px 28px;
         text-align: center;
-        max-width: 640px;
+        max-width: 900px;
         width: 100%;
         backdrop-filter: blur(4px);
     }
@@ -108,6 +113,12 @@
         .no-voting__card { padding: 24px 16px; }
         .no-voting__card h2 { font-size: 1.25rem; }
     }
+    /* table styles (lightweight, shared with admin) */
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    .data-table thead tr { background-color: rgba(0,0,0,0.04); }
+    .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #e9e9e9; text-align: left; }
+    .actions-col { width: 160px; text-align: center; }
+    .small { font-size: 0.9rem; color: #666; }
 </style>
 <body>
     <div class="navbar">
@@ -133,12 +144,46 @@
     </div>
     <div class="main">
         <div class="container">
-            <div class="no-voting" role="status" aria-live="polite">
-                <div class="no-voting__card">
-                    <h2>No Active Elections</h2>
-                    <p>There are currently no active elections available for voting. Please check back later. If you think this is an error, contact your administrator.</p>
+            {% if elections and elections|length > 0 %}
+                <div class="no-voting__card" aria-live="polite">
+                    <h2>Active Elections</h2>
+                    <p class="small">Select an election below to start voting. Make sure you are logged in as a voter.</p>
+                    <div style="overflow-x:auto; margin-top:12px;">
+                        <table class="data-table" role="table" aria-label="Active elections">
+                            <thead>
+                                <tr>
+                                    <th>Election</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th class="actions-col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in elections %}
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight:600">{{ e.title }}</div>
+                                            <div class="small">{{ e.description or '' }}</div>
+                                        </td>
+                                        <td>{{ e.start_date.strftime('%Y-%m-%d') }} — {{ e.end_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ e.status }}</td>
+                                        <td class="actions-col">
+                                            <a href="{{ url_for('voter_vote') }}?election_id={{ e.id }}" class="btn btn--primary" role="button">Start Vote</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="no-voting" role="status" aria-live="polite">
+                    <div class="no-voting__card">
+                        <h2>No Active Elections</h2>
+                        <p>There are currently no active elections available for voting. Please check back later. If you think this is an error, contact your administrator.</p>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </body>
