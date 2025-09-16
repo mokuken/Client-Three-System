@@ -110,6 +110,25 @@
         cursor: pointer;
         font-size: 16px;
     }
+    /* floating review button */
+    .review-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: #007bff;
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 28px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        z-index: 2000;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .review-btn img { width: 18px; height: 18px; }
 </style>
 <body>
     <div class="navbar">
@@ -188,5 +207,11 @@
             </div>
         </div>
     </div>
+</div>
+    <!-- Floating Review Button -->
+    <button class="review-btn" id="reviewVouteBtn">
+        <img src="{{ url_for('static', filename='images/check.png') }}" alt="Review">
+        Review Vote
+    </button>
 </body>
 </html>
